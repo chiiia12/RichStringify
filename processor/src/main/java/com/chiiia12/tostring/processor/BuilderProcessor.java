@@ -43,7 +43,6 @@ public class BuilderProcessor extends AbstractProcessor {
                     setter -> setter.getSimpleName().toString(),
                     setter -> ((ExecutableType) setter.asType()).getParameterTypes().get(0).toString()
             ));
-//            JavaFileObject builderFile = processingEnv.getFiler().createSourceFile(builderClassName);
             try {
                 writeBuilderFile(className, setterMap);
             } catch (IOException e) {
@@ -113,6 +112,8 @@ public class BuilderProcessor extends AbstractProcessor {
             });
 
             out.println("}");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

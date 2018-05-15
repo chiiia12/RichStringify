@@ -21,7 +21,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
-@SupportedAnnotationTypes("com.chiiia12.processor.BuilderProperty")
+@SupportedAnnotationTypes("com.chiiia12.tostring.processor.BuilderProperty")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 public class BuilderProcessor extends AbstractProcessor {

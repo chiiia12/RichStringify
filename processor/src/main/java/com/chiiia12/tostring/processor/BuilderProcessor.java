@@ -90,6 +90,13 @@ public class BuilderProcessor extends AbstractProcessor {
             out.println("    }");
             out.println();
 
+            out.print("    public ");
+            out.print("String");
+            out.println(" toString() {");
+            out.println("        return \"totring\";");
+            out.println("    }");
+            out.println();
+
             setterMap.entrySet().forEach(setter -> {
                 String methodName = setter.getKey();
                 String argumentType = setter.getValue();

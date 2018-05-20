@@ -93,7 +93,14 @@ public class BuilderProcessor extends AbstractProcessor {
             out.print("    public ");
             out.print("String");
             out.println(" toString() {");
-            out.println("        return \"toString\";");
+            StringBuilder sb = new StringBuilder();
+            setterMap.entrySet().forEach(setter -> {
+                sb.append(" getKey: ");
+                sb.append(setter.getKey());
+                sb.append(" getValue: ");
+                sb.append(setter.getValue());
+            });
+            out.println("        return \"" + sb.toString() + "\";");
             out.println("    }");
             out.println();
 

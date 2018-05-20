@@ -13,6 +13,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 
@@ -23,10 +24,20 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-//        for (TypeElement annotation : annotations) {
-//            Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
-//            Map<Boolean, List<Element>> annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element ->
-//                    ((ExecutableType) element.asType()).getParameterTypes().size() == 1 && element.getSimpleName().toString().startsWith("set")));
+        for (TypeElement annotation : annotations) {
+            Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
+
+            for (Element element : annotatedElements) {
+                String className = ((TypeElement) element.getEnclosingElement()).getQualifiedName().toString();
+                try {
+                    writeBuilderFile(className, null);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+//            Map<Boolean, List<Element>> annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element -> {
+//
+//            });
 //            List<Element> setters = annotatedField.get(true);
 //            List<Element> otherField = annotatedField.get(false);
 //
@@ -45,9 +56,8 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
-//        }
-//        return true;
-        return false;
+        }
+        return true;
     }
 
     private void writeBuilderFile(String className, Map<String, String> setterMap) throws IOException {
@@ -57,9 +67,8 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             packageName = className.substring(0, lastDot);
         }
         String simpleClassName = className.substring(lastDot + 1);
-        String builderClassName = className + "Builder";
+        String builderClassName = className + "Stringify";
         String builderSimpleClassName = builderClassName.substring(lastDot + 1);
-
         JavaFileObject builderFile = processingEnv.getFiler().createSourceFile(builderClassName);
 
         try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
@@ -81,40 +90,40 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             out.println("();");
             out.println();
 
-            out.print("    public ");
-            out.print("String");
-            out.println(" toString() {");
-            StringBuilder sb = new StringBuilder();
-            setterMap.entrySet().forEach(setter -> {
-                sb.append(" getKey: ");
-                sb.append(setter.getKey());
-                sb.append(" getValue: ");
-                sb.append(setter.getValue());
-            });
-            out.println("        return \"" + sb.toString() + "\";");
-            out.println("    }");
-            out.println();
+//            out.print("    public ");
+//            out.print("String");
+//            out.println(" toString() {");
+//            StringBuilder sb = new StringBuilder();
+//            setterMap.entrySet().forEach(setter -> {
+//                sb.append(" getKey: ");
+//                sb.append(setter.getKey());
+//                sb.append(" getValue: ");
+//                sb.append(setter.getValue());
+//            });
+//            out.println("        return \"" + sb.toString() + "\";");
+//            out.println("    }");
+//            out.println();
 
-            setterMap.entrySet().forEach(setter -> {
-                String methodName = setter.getKey();
-                String argumentType = setter.getValue();
-
-                out.print("    public ");
-                out.print(builderSimpleClassName);
-                out.print(" ");
-                out.print(methodName);
-
-                out.print("(");
-
-                out.print(argumentType);
-                out.println(" value) {");
-                out.print("        object.");
-                out.print(methodName);
-                out.println("(value);");
-                out.println("        return this;");
-                out.println("    }");
-                out.println();
-            });
+//            setterMap.entrySet().forEach(setter -> {
+//                String methodName = setter.getKey();
+//                String argumentType = setter.getValue();
+//
+//                out.print("    public ");
+//                out.print(builderSimpleClassName);
+//                out.print(" ");
+//                out.print(methodName);
+//
+//                out.print("(");
+//
+//                out.print(argumentType);
+//                out.println(" value) {");
+//                out.print("        object.");
+//                out.print(methodName);
+//                out.println("(value);");
+//                out.println("        return this;");
+//                out.println("    }");
+//                out.println();
+//            });
 
             out.println("}");
         } catch (Exception e) {

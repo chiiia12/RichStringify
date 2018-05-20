@@ -7,9 +7,11 @@ import static org.junit.Assert.assertEquals;
 public class PersionBuilderUnitTest {
     @Test
     public void whenBuildPersonWithBuilder_thenObjectHasPropertyValues() {
-        com.chiiia12.tostring.user.Person person = new PersonBuilder().setAge(25).setName("John").build();
+        PersonBuilder personBuilder = new PersonBuilder();
+        Person person = personBuilder.setAge(25).setName("John").build();
         assertEquals(25, person.getAge());
         assertEquals("John", person.getName());
+        assertEquals("toString", personBuilder.toString());
     }
 
 }

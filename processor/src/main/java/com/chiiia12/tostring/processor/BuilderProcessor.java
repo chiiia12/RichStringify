@@ -93,7 +93,7 @@ public class BuilderProcessor extends AbstractProcessor {
             out.print("    public ");
             out.print("String");
             out.println(" toString() {");
-            out.println("        return \"totring\";");
+            out.println("        return \"toString\";");
             out.println("    }");
             out.println();
 

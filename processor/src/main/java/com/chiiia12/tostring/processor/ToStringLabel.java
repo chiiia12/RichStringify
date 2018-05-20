@@ -5,8 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.SOURCE)
-//means it is only available during source processing and is not available at runtime
-public @interface BuilderProperty {
+public @interface ToStringLabel {
 }

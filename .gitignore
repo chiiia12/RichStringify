@@ -1,4 +1,6 @@
 
+# Generally
+.DS_Store
 # Created by https://www.gitignore.io/api/java,intellij,intellij+iml
 
 ### Intellij ###
@@ -36,6 +38,9 @@ cmake-build-debug/
 
 # IntelliJ
 /out/
+/user/target/
+/processor/target/
+/target/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

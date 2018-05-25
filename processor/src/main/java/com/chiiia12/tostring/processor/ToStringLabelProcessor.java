@@ -18,7 +18,6 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.ExecutableType;
 import javax.tools.JavaFileObject;
 
 @SupportedAnnotationTypes("com.chiiia12.tostring.processor.ToStringLabel")
@@ -30,15 +29,17 @@ public class ToStringLabelProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (TypeElement annotation : annotations) {
             Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
-            Map<Boolean, List<Element>> annotatedField = new HashMap<>();//TODO
+            Map<Boolean, List<Element>> annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element -> true));
             List<Element> setters = annotatedField.get(true);
-
-            String className = ((TypeElement) annotatedField.get(true).get(0).getEnclosingElement()).getQualifiedName().toString();
-            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(
-                    setter -> setter.getSimpleName().toString(),
-                    setter -> ((ExecutableType) setter.asType()).getParameterTypes().get(0).toString()
-            ));
-            //TODO get field and value and put setterMap
+//
+            String className = ((TypeElement) setters.get(0).getEnclosingElement()).
+                    getQualifiedName().toString();
+//            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(
+//                    setter -> setter.getSimpleName().toString(),
+//                    setter -> ((ExecutableType) setter.asType()).getParameterTypes().get(0).toString()
+//            ));
+//            //TODO get field and value and put setterMap
+            Map<String, String> setterMap = new HashMap<>();
 
             try {
                 writeBuilderFile(className, setterMap);
@@ -100,19 +101,17 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             out.println("();");
             out.println();
 
-//            out.print("    public ");
-//            out.print("String");
-//            out.println(" toString() {");
-//            StringBuilder sb = new StringBuilder();
-//            setterMap.entrySet().forEach(setter -> {
-//                sb.append(" getKey: ");
-//                sb.append(setter.getKey());
-//                sb.append(" getValue: ");
-//                sb.append(setter.getValue());
-//            });
-//            out.println("        return \"" + sb.toString() + "\";");
-//            out.println("    }");
-//            out.println();
+            out.print("    public ");
+            out.print("String");
+            out.println(" toString() {");
+            StringBuilder sb = new StringBuilder();
+            setterMap.entrySet().forEach(setter -> {
+                sb.append(" getKey: ");
+                sb.append(" getValue: ");
+            });
+            out.println("        return \"" + sb.toString() + "\";");
+            out.println("    }");
+            out.println();
 
 //            setterMap.entrySet().forEach(setter -> {
 //                String methodName = setter.getKey();

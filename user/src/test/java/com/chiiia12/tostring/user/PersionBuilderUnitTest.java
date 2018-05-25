@@ -15,4 +15,10 @@ public class PersionBuilderUnitTest {
         System.out.println("toString(): " + personBuilder.toString());
     }
 
+    @Test
+    public void whenBuildPersonWithStringify_thenObjectHasPropertyValues() {
+        PersonStringify personStringify = new PersonStringify();
+        System.out.println("toString(): " + personStringify.toString());
+    }
+
 }

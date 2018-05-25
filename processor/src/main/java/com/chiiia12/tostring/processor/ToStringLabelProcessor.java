@@ -4,8 +4,11 @@ import com.google.auto.service.AutoService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -15,6 +18,7 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ExecutableType;
 import javax.tools.JavaFileObject;
 
 @SupportedAnnotationTypes("com.chiiia12.tostring.processor.ToStringLabel")
@@ -26,14 +30,20 @@ public class ToStringLabelProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (TypeElement annotation : annotations) {
             Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
+            Map<Boolean, List<Element>> annotatedField = new HashMap<>();//TODO
+            List<Element> setters = annotatedField.get(true);
 
-            for (Element element : annotatedElements) {
-                String className = ((TypeElement) element.getEnclosingElement()).getQualifiedName().toString();
-                try {
-                    writeBuilderFile(className, null);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            String className = ((TypeElement) annotatedField.get(true).get(0).getEnclosingElement()).getQualifiedName().toString();
+            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(
+                    setter -> setter.getSimpleName().toString(),
+                    setter -> ((ExecutableType) setter.asType()).getParameterTypes().get(0).toString()
+            ));
+            //TODO get field and value and put setterMap
+
+            try {
+                writeBuilderFile(className, setterMap);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 //            Map<Boolean, List<Element>> annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element -> {
 //

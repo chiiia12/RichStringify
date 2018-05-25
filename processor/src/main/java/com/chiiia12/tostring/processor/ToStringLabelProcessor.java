@@ -31,14 +31,10 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
             Map<Boolean, List<Element>> annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element -> true));
             List<Element> setters = annotatedField.get(true);
-//
+
             String className = ((TypeElement) setters.get(0).getEnclosingElement()).
                     getQualifiedName().toString();
-//            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(
-//                    setter -> setter.getSimpleName().toString(),
-//                    setter -> ((ExecutableType) setter.asType()).getParameterTypes().get(0).toString()
-//            ));
-//            //TODO get field and value and put setterMap
+            //TODO get field and value and put setterMap
             Map<String, String> setterMap = new HashMap<>();
 
             try {
@@ -46,27 +42,6 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            Map<Boolean, List<Element>> annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element -> {
-//
-//            });
-//            List<Element> setters = annotatedField.get(true);
-//            List<Element> otherField = annotatedField.get(false);
-//
-//            otherField.forEach(element ->
-//                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "@ToStringLabel must be applied a setXxx method with a single argument", element));
-//            if (setters.isEmpty()) {
-//                continue;
-//            }
-//            String className = ((TypeElement) setters.get(0).getEnclosingElement()).getQualifiedName().toString();
-//            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(
-//                    setter -> setter.getSimpleName().toString(),
-//                    setter -> ((ExecutableType) setter.asType()).getParameterTypes().get(0).toString()
-//            ));
-//            try {
-//                writeBuilderFile(className, setterMap);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         }
         return true;
     }

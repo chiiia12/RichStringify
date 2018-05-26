@@ -35,6 +35,10 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             String className = ((TypeElement) setters.get(0).getEnclosingElement()).
                     getQualifiedName().toString();
             //TODO get field and value and put setterMap
+//            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(
+//                    setter -> setter.getSimpleName().toString(),
+//                    setter -> setter.asType().toString()
+//            ));
             Map<String, String> setterMap = new HashMap<>();
 
             try {
@@ -82,7 +86,9 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             StringBuilder sb = new StringBuilder();
             setterMap.entrySet().forEach(setter -> {
                 sb.append(" getKey: ");
+                sb.append(setter.getKey());
                 sb.append(" getValue: ");
+                sb.append(setter.getValue());
             });
             out.println("        return \"" + sb.toString() + "\";");
             out.println("    }");

@@ -18,6 +18,9 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.JavaFileObject;
 
 @SupportedAnnotationTypes("com.chiiia12.tostring.processor.ToStringLabel")
@@ -34,12 +37,19 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
             String className = ((TypeElement) setters.get(0).getEnclosingElement()).
                     getQualifiedName().toString();
+            Set<VariableElement> fields = ElementFilter.fieldsIn(annotatedElements);
+            Map<String, String> setterMap = new HashMap<>();
+            for (VariableElement field : fields) {
+                TypeMirror fieldType = field.asType();
+                String fullTypeClassName = fieldType.toString();
+                setterMap.put(fullTypeClassName, field.getSimpleName().toString());
+            }
             //TODO get field and value and put setterMap
 //            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(
 //                    setter -> setter.getSimpleName().toString(),
 //                    setter -> setter.asType().toString()
 //            ));
-            Map<String, String> setterMap = new HashMap<>();
+//            Map<String, String> setterMap = new HashMap<>();
 
             try {
                 writeBuilderFile(className, setterMap);

@@ -98,9 +98,10 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                 sb.append(" getKey: ");
                 sb.append(setter.getKey());
                 sb.append(" getValue: ");
+                sb.append("\"+object.");
                 sb.append(setter.getValue());
             });
-            out.println("        return \"" + sb.toString() + "\";");
+            out.println("        return \"" + sb.toString() + ";");
             out.println("    }");
             out.println();
 

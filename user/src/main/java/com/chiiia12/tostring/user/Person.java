@@ -5,8 +5,8 @@ import com.chiiia12.tostring.processor.ToStringLabel;
 
 public class Person {
     @ToStringLabel
-    private int age;
-    private String name;
+    public int age;
+    public String name;
 
     public int getAge() {
         return age;

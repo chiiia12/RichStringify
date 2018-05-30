@@ -99,36 +99,13 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             out.println(" toString() {");
             StringBuilder sb = new StringBuilder();
             setterMap.entrySet().forEach(setter -> {
-                sb.append(" getKey: ");
-                sb.append(setter.getKey());
-                sb.append(" getValue: ");
-                sb.append("\"+object.");
+                sb.append(setter.getValue());
+                sb.append(": \"+object.");
                 sb.append(setter.getValue());
             });
             out.println("        return \"" + sb.toString() + ";");
             out.println("    }");
             out.println();
-
-//            setterMap.entrySet().forEach(setter -> {
-//                String methodName = setter.getKey();
-//                String argumentType = setter.getValue();
-//
-//                out.print("    public ");
-//                out.print(builderSimpleClassName);
-//                out.print(" ");
-//                out.print(methodName);
-//
-//                out.print("(");
-//
-//                out.print(argumentType);
-//                out.println(" value) {");
-//                out.print("        object.");
-//                out.print(methodName);
-//                out.println("(value);");
-//                out.println("        return this;");
-//                out.println("    }");
-//                out.println();
-//            });
 
             out.println("}");
         } catch (Exception e) {

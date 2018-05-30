@@ -88,6 +88,10 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             out.print(" object;");
             out.println();
 
+            out.print("    private ");
+            out.print("char separator = \'=\';");
+            out.println();
+
             out.print("    public ");
             out.println(builderSimpleClassName + "(" + simpleClassName + " obj) {");
             out.print(" this.object = obj;");

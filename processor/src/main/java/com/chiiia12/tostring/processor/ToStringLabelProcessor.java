@@ -1,9 +1,10 @@
 package com.chiiia12.tostring.processor;
 
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -44,13 +46,6 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                 String fullTypeClassName = fieldType.toString();
                 setterMap.put(fullTypeClassName, field.getSimpleName().toString());
             }
-            //TODO get field and value and put setterMap
-//            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(
-//                    setter -> setter.getSimpleName().toString(),
-//                    setter -> setter.asType().toString()
-//            ));
-//            Map<String, String> setterMap = new HashMap<>();
-
             try {
                 writeBuilderFile(className, setterMap);
             } catch (IOException e) {
@@ -71,49 +66,53 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         String builderSimpleClassName = builderClassName.substring(lastDot + 1);
         JavaFileObject builderFile = processingEnv.getFiler().createSourceFile(builderClassName);
 
-        try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
-            if (packageName != null) {
-                out.print("package ");
-                out.print(packageName);
-                out.println(";");
-                out.println();
-            }
-            out.print("public class ");
-            out.print(builderSimpleClassName);
-            out.println(" {");
-            out.println();
+        TypeSpec typeSpec = TypeSpec.classBuilder("Stringify").addModifiers(Modifier.PUBLIC).build();
+        JavaFile javaFile = JavaFile.builder(packageName, typeSpec).build();
+        javaFile.writeTo(processingEnv.getFiler());
 
-            out.print("    private ");
-            out.print(simpleClassName);
-            out.print(" object;");
-            out.println();
-
-            out.print("    private ");
-            out.print("char separator = \'=\';");
-            out.println();
-
-            out.print("    public ");
-            out.println(builderSimpleClassName + "(" + simpleClassName + " obj) {");
-            out.print(" this.object = obj;");
-            out.print("}");
-
-
-            out.print("    public ");
-            out.print("String");
-            out.println(" toString() {");
-            StringBuilder sb = new StringBuilder();
-            setterMap.entrySet().forEach(setter -> {
-                sb.append(setter.getValue());
-                sb.append(": \"+object.");
-                sb.append(setter.getValue());
-            });
-            out.println("        return \"" + sb.toString() + ";");
-            out.println("    }");
-            out.println();
-
-            out.println("}");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
+//            if (packageName != null) {
+//                out.print("package ");
+//                out.print(packageName);
+//                out.println(";");
+//                out.println();
+//            }
+//            out.print("public class ");
+//            out.print(builderSimpleClassName);
+//            out.println(" {");
+//            out.println();
+//
+//            out.print("    private ");
+//            out.print(simpleClassName);
+//            out.print(" object;");
+//            out.println();
+//
+////            out.print("    private ");
+////            out.print("char separator = \'=\';");
+////            out.println();
+//
+//            out.print("    public ");
+//            out.println(builderSimpleClassName + "(" + simpleClassName + " obj) {");
+//            out.print(" this.object = obj;");
+//            out.print("}");
+//
+//
+//            out.print("    public ");
+//            out.print("String");
+//            out.println(" toString() {");
+//            StringBuilder sb = new StringBuilder();
+//            setterMap.entrySet().forEach(setter -> {
+//                sb.append(setter.getValue());
+//                sb.append(": \"+object.");
+//                sb.append(setter.getValue());
+//            });
+//            out.println("        return \"" + sb.toString() + ";");
+//            out.println("    }");
+//            out.println();
+//
+//            out.println("}");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 }

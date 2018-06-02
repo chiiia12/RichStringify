@@ -1,8 +1,10 @@
 package com.chiiia12.tostring.processor;
 
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
@@ -67,10 +69,21 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         String builderSimpleClassName = builderClassName.substring(lastDot + 1);
         JavaFileObject builderFile = processingEnv.getFiler().createSourceFile(builderClassName);
 
+        //add field
+        FieldSpec objectField = FieldSpec.builder(Object.class, "object").build();
+        //add constructor
+        ParameterSpec param = ParameterSpec.builder(Object.class, "param").build();
+        MethodSpec constructor = MethodSpec.constructorBuilder().addParameter(param).addCode("object = param;\n").build();
         //add toString method
-        MethodSpec toStringMethod = MethodSpec.methodBuilder("toString").addModifiers(Modifier.PUBLIC).returns(String.class).addCode("return \"hoge\";\n").build();
+        MethodSpec toStringMethod = MethodSpec.methodBuilder("toString").addModifiers(Modifier.PUBLIC).returns(String.class).addCode("return \"").addCode(buildMessage(setterMap)).build();
 
-        TypeSpec typeSpec = TypeSpec.classBuilder("Stringify").addModifiers(Modifier.PUBLIC).addMethod(toStringMethod).build();
+        TypeSpec typeSpec = TypeSpec.classBuilder("Stringify")
+                .addModifiers(Modifier.PUBLIC)
+                .addField(objectField)
+                .addMethod(constructor)
+                .addMethod(toStringMethod)
+                .build();
+
         JavaFile javaFile = JavaFile.builder(packageName, typeSpec).build();
         javaFile.writeTo(processingEnv.getFiler());
 
@@ -119,5 +132,16 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    private String buildMessage(Map<String, String> setterMap) {
+        StringBuilder sb = new StringBuilder();
+        setterMap.entrySet().forEach(setter -> {
+            sb.append(setter.getValue());
+            sb.append(": \"+object.");
+            sb.append(setter.getValue());
+        });
+        sb.append(";\n");
+        return sb.toString();
     }
 }

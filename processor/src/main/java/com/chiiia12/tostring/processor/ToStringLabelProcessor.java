@@ -2,6 +2,7 @@ package com.chiiia12.tostring.processor;
 
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
@@ -66,9 +67,13 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         String builderSimpleClassName = builderClassName.substring(lastDot + 1);
         JavaFileObject builderFile = processingEnv.getFiler().createSourceFile(builderClassName);
 
-        TypeSpec typeSpec = TypeSpec.classBuilder("Stringify").addModifiers(Modifier.PUBLIC).build();
+        //add toString method
+        MethodSpec toStringMethod = MethodSpec.methodBuilder("toString").addModifiers(Modifier.PUBLIC).returns(String.class).addCode("return \"hoge\";\n").build();
+
+        TypeSpec typeSpec = TypeSpec.classBuilder("Stringify").addModifiers(Modifier.PUBLIC).addMethod(toStringMethod).build();
         JavaFile javaFile = JavaFile.builder(packageName, typeSpec).build();
         javaFile.writeTo(processingEnv.getFiler());
+
 
 //        try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
 //            if (packageName != null) {

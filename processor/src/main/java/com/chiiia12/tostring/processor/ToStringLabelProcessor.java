@@ -86,52 +86,6 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
         JavaFile javaFile = JavaFile.builder(packageName, typeSpec).build();
         javaFile.writeTo(processingEnv.getFiler());
-
-
-//        try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
-//            if (packageName != null) {
-//                out.print("package ");
-//                out.print(packageName);
-//                out.println(";");
-//                out.println();
-//            }
-//            out.print("public class ");
-//            out.print(builderSimpleClassName);
-//            out.println(" {");
-//            out.println();
-//
-//            out.print("    private ");
-//            out.print(simpleClassName);
-//            out.print(" object;");
-//            out.println();
-//
-////            out.print("    private ");
-////            out.print("char separator = \'=\';");
-////            out.println();
-//
-//            out.print("    public ");
-//            out.println(builderSimpleClassName + "(" + simpleClassName + " obj) {");
-//            out.print(" this.object = obj;");
-//            out.print("}");
-//
-//
-//            out.print("    public ");
-//            out.print("String");
-//            out.println(" toString() {");
-//            StringBuilder sb = new StringBuilder();
-//            setterMap.entrySet().forEach(setter -> {
-//                sb.append(setter.getValue());
-//                sb.append(": \"+object.");
-//                sb.append(setter.getValue());
-//            });
-//            out.println("        return \"" + sb.toString() + ";");
-//            out.println("    }");
-//            out.println();
-//
-//            out.println("}");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     private String buildMessage(Map<String, String> setterMap) {

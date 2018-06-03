@@ -77,8 +77,8 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         //add toString method
         MethodSpec toStringMethod = MethodSpec.methodBuilder("toString")
                 .addModifiers(Modifier.PUBLIC).returns(String.class)
-                .addCode("if(object instanceof " + simpleClassName + "){\n")
-                .addCode(simpleClassName + " person = (" + simpleClassName + ")object;\n")
+                .addCode(String.format("if(object instanceof %s) {\n ", simpleClassName))
+                .addCode(String.format("%s %s= (%s)object;\n", simpleClassName, simpleClassName.toLowerCase(), simpleClassName))
                 .addCode("return \"")
                 .addCode(buildMessage(setterMap))
                 .addCode("}\n")

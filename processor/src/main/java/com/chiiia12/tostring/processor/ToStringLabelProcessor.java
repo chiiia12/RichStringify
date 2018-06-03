@@ -78,11 +78,11 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         MethodSpec toStringMethod = MethodSpec.methodBuilder("toString")
                 .addModifiers(Modifier.PUBLIC).returns(String.class)
                 .addCode("if(object instanceof " + simpleClassName + "){\n")
-                .addCode("Person person = (Person)object;\n")
+                .addCode(simpleClassName + " person = (" + simpleClassName + ")object;\n")
                 .addCode("return \"")
                 .addCode(buildMessage(setterMap))
                 .addCode("}\n")
-                .addCode("return null;")
+                .addCode("return null;\n")
                 .build();
 
         TypeSpec typeSpec = TypeSpec.classBuilder("Stringify")

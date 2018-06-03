@@ -39,7 +39,6 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
             TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("Stringify");
             typeBuilder.addModifiers(Modifier.PUBLIC);
-            //TODO change to Map<String,List<String>> of use MultipleMap in guava
             Map<String, List<String>> map = new HashMap<>();
             for (Element e : setters) {
                 String className = ((TypeElement) setters.get(0).getEnclosingElement()).

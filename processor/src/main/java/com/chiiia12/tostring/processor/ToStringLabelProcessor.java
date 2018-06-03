@@ -77,10 +77,12 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         //add toString method
         MethodSpec toStringMethod = MethodSpec.methodBuilder("toString")
                 .addModifiers(Modifier.PUBLIC).returns(String.class)
-                .addCode("if(object instanceof " + simpleClassName + ".class){\n")
+                .addCode("if(object instanceof " + simpleClassName + "){\n")
+                .addCode("Person person = (Person)object;\n")
                 .addCode("return \"")
                 .addCode(buildMessage(setterMap))
                 .addCode("}\n")
+                .addCode("return null;")
                 .build();
 
         TypeSpec typeSpec = TypeSpec.classBuilder("Stringify")
@@ -96,7 +98,6 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
     private String buildMessage(Map<String, String> setterMap) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Person person = (Person)object;\n");
         setterMap.entrySet().forEach(setter -> {
             sb.append(setter.getValue());
             sb.append(": \"+person.");

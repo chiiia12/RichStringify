@@ -38,6 +38,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
             TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("Stringify");
             typeBuilder.addModifiers(Modifier.PUBLIC);
+            //TODO change to Map<String,List<String>> of use MultipleMap in guava
             Map<String, String> map = new HashMap<>();
             for (Element e : setters) {
                 String className = ((TypeElement) setters.get(0).getEnclosingElement()).
@@ -55,6 +56,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             typeBuilder.addField(objectField).addMethod(constructor).addMethod(toString);
 
             TypeSpec typeSpec = typeBuilder.build();
+            //TODO get package name from dinamic
             JavaFile javaFile = JavaFile.builder("com.chiiia12.tostring.user", typeSpec).build();
             try {
                 javaFile.writeTo(processingEnv.getFiler());
@@ -71,14 +73,9 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         toStringMethodBuilder.addModifiers(Modifier.PUBLIC).returns(String.class);
 
         for (Map.Entry<String, String> entry : setterMap.entrySet()) {
-            String packageName = null;
             int lastDot = entry.getKey().lastIndexOf('.');
-            if (lastDot > 0) {
-                packageName = entry.getKey().substring(0, lastDot);
-            }
             String simpleClassName = entry.getKey().substring(lastDot + 1);
             String builderClassName = entry.getKey() + "Stringify";
-            String builderSimpleClassName = builderClassName.substring(lastDot + 1);
 
             //add toString method
             toStringMethodBuilder.addCode(String.format("if(object instanceof %s) {\n ", simpleClassName))

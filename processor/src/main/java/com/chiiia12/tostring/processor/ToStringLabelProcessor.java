@@ -8,6 +8,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +40,14 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("Stringify");
             typeBuilder.addModifiers(Modifier.PUBLIC);
             //TODO change to Map<String,List<String>> of use MultipleMap in guava
-            Map<String, String> map = new HashMap<>();
+            Map<String, List<String>> map = new HashMap<>();
             for (Element e : setters) {
                 String className = ((TypeElement) setters.get(0).getEnclosingElement()).
                         getQualifiedName().toString();
-                map.put(className, e.getSimpleName().toString());
+                if (!map.containsKey(className)) {
+                    map.put(className, new ArrayList<>());
+                }
+                map.get(className).add(e.getSimpleName().toString());
             }
             MethodSpec toString = writeBuilderFile(map);
 
@@ -68,19 +72,18 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         return true;
     }
 
-    private MethodSpec writeBuilderFile(Map<String, String> setterMap) {
+    private MethodSpec writeBuilderFile(Map<String, List<String>> setterMap) {
         MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
         toStringMethodBuilder.addModifiers(Modifier.PUBLIC).returns(String.class);
 
-        for (Map.Entry<String, String> entry : setterMap.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : setterMap.entrySet()) {
             int lastDot = entry.getKey().lastIndexOf('.');
             String simpleClassName = entry.getKey().substring(lastDot + 1);
-            String builderClassName = entry.getKey() + "Stringify";
 
             //add toString method
             toStringMethodBuilder.addCode(String.format("if(object instanceof %s) {\n ", simpleClassName))
                     .addCode(String.format("%s %s= (%s)object;\n", simpleClassName, simpleClassName.toLowerCase(), simpleClassName))
-                    .addCode("return \"")
+                    .addCode("return ")
                     .addCode(buildMessage(simpleClassName, entry))
                     .addCode("}\n")
                     .addCode("return null;\n")
@@ -92,12 +95,16 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
     }
 
-    private String buildMessage(String simpleClassName, Map.Entry<String, String> entry) {
+    private String buildMessage(String simpleClassName, Map.Entry<String, List<String>> entry) {
         StringBuilder sb = new StringBuilder();
-        sb.append(entry.getValue());
-        sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
-        sb.append(entry.getValue());
-        sb.append(";\n");
+        sb.append("\"");
+        entry.getValue().forEach(item -> {
+            sb.append(item);
+            sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
+            sb.append(item);
+            sb.append("+\" ");
+        });
+        sb.append("\";\n");
         return sb.toString();
     }
 }

@@ -23,10 +23,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
-import javax.tools.JavaFileObject;
 
 @SupportedAnnotationTypes("com.chiiia12.tostring.processor.ToStringLabel")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -40,69 +36,70 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             Map<Boolean, List<Element>> annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element -> true));
             List<Element> setters = annotatedField.get(true);
 
-            String className = ((TypeElement) setters.get(0).getEnclosingElement()).
-                    getQualifiedName().toString();
-            Set<VariableElement> fields = ElementFilter.fieldsIn(annotatedElements);
-            Map<String, String> setterMap = new HashMap<>();
-            for (VariableElement field : fields) {
-                TypeMirror fieldType = field.asType();
-                String fullTypeClassName = fieldType.toString();
-                setterMap.put(fullTypeClassName, field.getSimpleName().toString());
+            TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("Stringify");
+            typeBuilder.addModifiers(Modifier.PUBLIC);
+            Map<String, String> map = new HashMap<>();
+            for (Element e : setters) {
+                String className = ((TypeElement) setters.get(0).getEnclosingElement()).
+                        getQualifiedName().toString();
+                map.put(className, e.getSimpleName().toString());
             }
+            MethodSpec toString = writeBuilderFile(map);
+
+            //add field
+            FieldSpec objectField = FieldSpec.builder(Object.class, "object").build();
+            //add constructor
+            ParameterSpec param = ParameterSpec.builder(Object.class, "param").build();
+            MethodSpec constructor = MethodSpec.constructorBuilder().addParameter(param).addCode("object = param;\n").build();
+
+            typeBuilder.addField(objectField).addMethod(constructor).addMethod(toString);
+
+            TypeSpec typeSpec = typeBuilder.build();
+            JavaFile javaFile = JavaFile.builder("com.chiiia12.tostring.user", typeSpec).build();
             try {
-                writeBuilderFile(className, setterMap);
+                javaFile.writeTo(processingEnv.getFiler());
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
         return true;
     }
 
-    private void writeBuilderFile(String className, Map<String, String> setterMap) throws IOException {
-        String packageName = null;
-        int lastDot = className.lastIndexOf('.');
-        if (lastDot > 0) {
-            packageName = className.substring(0, lastDot);
+    private MethodSpec writeBuilderFile(Map<String, String> setterMap) {
+        MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
+        toStringMethodBuilder.addModifiers(Modifier.PUBLIC).returns(String.class);
+
+        for (Map.Entry<String, String> entry : setterMap.entrySet()) {
+            String packageName = null;
+            int lastDot = entry.getKey().lastIndexOf('.');
+            if (lastDot > 0) {
+                packageName = entry.getKey().substring(0, lastDot);
+            }
+            String simpleClassName = entry.getKey().substring(lastDot + 1);
+            String builderClassName = entry.getKey() + "Stringify";
+            String builderSimpleClassName = builderClassName.substring(lastDot + 1);
+
+            //add toString method
+            toStringMethodBuilder.addCode(String.format("if(object instanceof %s) {\n ", simpleClassName))
+                    .addCode(String.format("%s %s= (%s)object;\n", simpleClassName, simpleClassName.toLowerCase(), simpleClassName))
+                    .addCode("return \"")
+                    .addCode(buildMessage(simpleClassName, entry))
+                    .addCode("}\n")
+                    .addCode("return null;\n")
+                    .build();
+
         }
-        String simpleClassName = className.substring(lastDot + 1);
-        String builderClassName = className + "Stringify";
-        String builderSimpleClassName = builderClassName.substring(lastDot + 1);
-        JavaFileObject builderFile = processingEnv.getFiler().createSourceFile(builderClassName);
+        return toStringMethodBuilder.build();
 
-        //add field
-        FieldSpec objectField = FieldSpec.builder(Object.class, "object").build();
-        //add constructor
-        ParameterSpec param = ParameterSpec.builder(Object.class, "param").build();
-        MethodSpec constructor = MethodSpec.constructorBuilder().addParameter(param).addCode("object = param;\n").build();
-        //add toString method
-        MethodSpec toStringMethod = MethodSpec.methodBuilder("toString")
-                .addModifiers(Modifier.PUBLIC).returns(String.class)
-                .addCode(String.format("if(object instanceof %s) {\n ", simpleClassName))
-                .addCode(String.format("%s %s= (%s)object;\n", simpleClassName, simpleClassName.toLowerCase(), simpleClassName))
-                .addCode("return \"")
-                .addCode(buildMessage(setterMap))
-                .addCode("}\n")
-                .addCode("return null;\n")
-                .build();
 
-        TypeSpec typeSpec = TypeSpec.classBuilder("Stringify")
-                .addModifiers(Modifier.PUBLIC)
-                .addField(objectField)
-                .addMethod(constructor)
-                .addMethod(toStringMethod)
-                .build();
-
-        JavaFile javaFile = JavaFile.builder(packageName, typeSpec).build();
-        javaFile.writeTo(processingEnv.getFiler());
     }
 
-    private String buildMessage(Map<String, String> setterMap) {
+    private String buildMessage(String simpleClassName, Map.Entry<String, String> entry) {
         StringBuilder sb = new StringBuilder();
-        setterMap.entrySet().forEach(setter -> {
-            sb.append(setter.getValue());
-            sb.append(": \"+person.");
-            sb.append(setter.getValue());
-        });
+        sb.append(entry.getValue());
+        sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
+        sb.append(entry.getValue());
         sb.append(";\n");
         return sb.toString();
     }

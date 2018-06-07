@@ -41,7 +41,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             typeBuilder.addModifiers(Modifier.PUBLIC);
             Map<String, List<String>> map = new HashMap<>();
             for (Element e : setters) {
-                String className = ((TypeElement) setters.get(0).getEnclosingElement()).
+                String className = ((TypeElement) e.getEnclosingElement()).
                         getQualifiedName().toString();
                 if (!map.containsKey(className)) {
                     map.put(className, new ArrayList<>());
@@ -84,12 +84,9 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                     .addCode(String.format("%s %s= (%s)object;\n", simpleClassName, simpleClassName.toLowerCase(), simpleClassName))
                     .addCode("return ")
                     .addCode(buildMessage(simpleClassName, entry))
-                    .addCode("}\n")
-                    .addCode("return null;\n")
-                    .build();
-
+                    .addCode("}\n");
         }
-        return toStringMethodBuilder.build();
+        return toStringMethodBuilder.addCode("return null;\n").build();
 
 
     }

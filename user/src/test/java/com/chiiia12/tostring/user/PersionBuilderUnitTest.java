@@ -6,8 +6,9 @@ public class PersionBuilderUnitTest {
     @Test
     public void whenBuildPersonWithStringify_thenObjectHasPropertyValues() {
         //person test
-        PersonBuilder personBuilder = new PersonBuilder();
-        Person person = personBuilder.setAge(25).setName("John").build();
+        Person person = new Person();
+        person.age = 34;
+        person.name = "aaa";
         System.out.println("toString(): " + Stringify.toString(person));
 
         //animal test

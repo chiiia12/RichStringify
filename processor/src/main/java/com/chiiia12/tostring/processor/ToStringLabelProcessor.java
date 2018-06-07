@@ -52,12 +52,9 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
             //add field
             FieldSpec objectField = FieldSpec.builder(Object.class, "object").build();
-            //add constructor
-            ParameterSpec param = ParameterSpec.builder(Object.class, "param").build();
-            MethodSpec constructor = MethodSpec.constructorBuilder().addParameter(param).addCode("object = param;\n").build();
 
-            typeBuilder.addField(objectField).addMethod(constructor).addMethod(toString);
-
+            //class build
+            typeBuilder.addField(objectField).addMethod(toString);
             TypeSpec typeSpec = typeBuilder.build();
             //TODO get package name from dinamic
             JavaFile javaFile = JavaFile.builder("com.chiiia12.tostring.user", typeSpec).build();
@@ -72,8 +69,9 @@ public class ToStringLabelProcessor extends AbstractProcessor {
     }
 
     private MethodSpec writeBuilderFile(Map<String, List<String>> setterMap) {
+        ParameterSpec param = ParameterSpec.builder(Object.class, "object").build();
         MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
-        toStringMethodBuilder.addModifiers(Modifier.PUBLIC).returns(String.class);
+        toStringMethodBuilder.addModifiers(Modifier.PUBLIC).addModifiers(Modifier.STATIC).addParameter(param).returns(String.class);
 
         for (Map.Entry<String, List<String>> entry : setterMap.entrySet()) {
             int lastDot = entry.getKey().lastIndexOf('.');

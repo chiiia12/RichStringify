@@ -48,7 +48,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                 }
                 map.get(className).add(e.getSimpleName().toString());
             }
-            MethodSpec toString = writeBuilderFile(map);
+            MethodSpec toString = buildToStringMethod(map);
 
             //add field
             FieldSpec objectField = FieldSpec.builder(Object.class, "object").build();
@@ -68,7 +68,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         return true;
     }
 
-    private MethodSpec writeBuilderFile(Map<String, List<String>> setterMap) {
+    private MethodSpec buildToStringMethod(Map<String, List<String>> setterMap) {
         ParameterSpec param = ParameterSpec.builder(Object.class, "object").build();
         MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
         toStringMethodBuilder.addModifiers(Modifier.PUBLIC).addModifiers(Modifier.STATIC).addParameter(param).returns(String.class);

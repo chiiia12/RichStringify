@@ -25,6 +25,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+import javafx.util.Pair;
+
 @SupportedAnnotationTypes("com.chiiia12.tostring.processor.ToStringLabel")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
@@ -39,14 +41,15 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
             TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("Stringify");
             typeBuilder.addModifiers(Modifier.PUBLIC);
-            Map<String, List<String>> map = new HashMap<>();
+            Map<String, List<Pair<String, String>>> map = new HashMap<>();
             for (Element e : setters) {
-                String className = ((TypeElement) e.getEnclosingElement()).
-                        getQualifiedName().toString();
+                String className = ((TypeElement) e.getEnclosingElement()).getQualifiedName().toString();
+                ToStringLabel toStringLabel = e.getAnnotation(ToStringLabel.class);
+                String label = toStringLabel.value();
                 if (!map.containsKey(className)) {
                     map.put(className, new ArrayList<>());
                 }
-                map.get(className).add(e.getSimpleName().toString());
+                map.get(className).add(new Pair(e.getSimpleName().toString(), label.isEmpty() ? e.getSimpleName().toString() : label));
             }
             MethodSpec toString = buildToStringMethod(map);
 
@@ -56,6 +59,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             //class build
             typeBuilder.addField(objectField).addMethod(toString);
             TypeSpec typeSpec = typeBuilder.build();
+
             //TODO get package name from dinamic
             JavaFile javaFile = JavaFile.builder("com.chiiia12.tostring.user", typeSpec).build();
             try {
@@ -68,12 +72,12 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         return true;
     }
 
-    private MethodSpec buildToStringMethod(Map<String, List<String>> setterMap) {
+    private MethodSpec buildToStringMethod(Map<String, List<Pair<String, String>>> setterMap) {
         ParameterSpec param = ParameterSpec.builder(Object.class, "object").build();
         MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
         toStringMethodBuilder.addModifiers(Modifier.PUBLIC).addModifiers(Modifier.STATIC).addParameter(param).returns(String.class);
 
-        for (Map.Entry<String, List<String>> entry : setterMap.entrySet()) {
+        for (Map.Entry<String, List<Pair<String, String>>> entry : setterMap.entrySet()) {
             int lastDot = entry.getKey().lastIndexOf('.');
             String simpleClassName = entry.getKey().substring(lastDot + 1);
 
@@ -82,21 +86,21 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                     .addCode(String.format("%s %s= (%s)object;\n", simpleClassName, simpleClassName.toLowerCase(), simpleClassName))
                     .addCode("return ")
                     .addCode(buildMessage(simpleClassName, entry))
-                    .addCode("}\n");
+                    .addCode("}\n ");
         }
         return toStringMethodBuilder.addCode("return null;\n").build();
 
 
     }
 
-    private String buildMessage(String simpleClassName, Map.Entry<String, List<String>> entry) {
+    private String buildMessage(String simpleClassName, Map.Entry<String, List<Pair<String, String>>> entry) {
         StringBuilder sb = new StringBuilder();
         sb.append("\"");
         entry.getValue().forEach(item -> {
-            sb.append(item);
+            sb.append(item.getValue());
             sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
-            sb.append(item);
-            sb.append("+\" ");
+            sb.append(item.getKey());
+            sb.append("+\"\\n");
         });
         sb.append("\";\n");
         return sb.toString();

@@ -1,6 +1,7 @@
 package com.chiiia12.tostring.processor;
 
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -52,8 +53,12 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             }
             MethodSpec toString = buildToStringMethod(map);
 
+            //add separator field
+            FieldSpec objectField = FieldSpec.builder(String.class, "separator").addModifiers(Modifier.STATIC).addModifiers(Modifier.FINAL).initializer("\"=\"").build();
+
+
             //class build
-            typeBuilder.addMethod(toString);
+            typeBuilder.addField(objectField).addMethod(toString);
             TypeSpec typeSpec = typeBuilder.build();
 
             //TODO get package name from dinamic

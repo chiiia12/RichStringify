@@ -9,6 +9,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             TypeSpec typeSpec = typeBuilder.build();
 
             //TODO get package name from dinamic
-            JavaFile javaFile = JavaFile.builder("com.chiiia12.tostring.user", typeSpec).build();
+            JavaFile javaFile = JavaFile.builder(getPackageName(map), typeSpec).build();
             try {
                 javaFile.writeTo(processingEnv.getFiler());
             } catch (IOException e) {
@@ -73,7 +74,28 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         return true;
     }
 
-    private MethodSpec buildToStringMethod(Map<String, List<Pair<String, String>>> setterMap) {
+    private String getPackageName(Map<String, List<Pair<String, String>>> map) {
+        String[] packageName = null;
+        for (String cn : map.keySet()) {
+            if (packageName == null) {
+                packageName = cn.split(".", 1);
+                continue;
+            }
+            String[] className = cn.split(".", 1);
+            if (packageName == className) {
+                continue;
+            }
+            for (int i = 0; i < packageName.length; i++) {
+                if (!packageName[i].equals(className[i])) {
+                    return String.join("", Arrays.copyOfRange(packageName, 0, i - 1));
+                }
+            }
+        }
+        return null;
+    }
+
+    private MethodSpec buildToStringMethod
+            (Map<String, List<Pair<String, String>>> setterMap) {
         ParameterSpec param = ParameterSpec.builder(Object.class, "object").build();
         MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
         toStringMethodBuilder.addModifiers(Modifier.PUBLIC).addModifiers(Modifier.STATIC).addParameter(param).returns(String.class);
@@ -94,7 +116,8 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
     }
 
-    private String buildMessage(String simpleClassName, Map.Entry<String, List<Pair<String, String>>> entry) {
+    private String buildMessage(String
+                                        simpleClassName, Map.Entry<String, List<Pair<String, String>>> entry) {
         StringBuilder sb = new StringBuilder();
         sb.append("\"");
         entry.getValue().forEach(item -> {

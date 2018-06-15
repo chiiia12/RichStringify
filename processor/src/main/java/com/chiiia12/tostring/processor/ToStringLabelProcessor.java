@@ -1,5 +1,6 @@
 package com.chiiia12.tostring.processor;
 
+import com.chiiia12.tostring.processor.model.PackageNameManager;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -61,8 +62,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             typeBuilder.addField(objectField).addMethod(toString);
             TypeSpec typeSpec = typeBuilder.build();
 
-            //TODO get package name from dinamic
-            JavaFile javaFile = JavaFile.builder("com.chiiia12.tostring.user", typeSpec).build();
+            JavaFile javaFile = JavaFile.builder(PackageNameManager.createPackageName(map), typeSpec).build();
             try {
                 javaFile.writeTo(processingEnv.getFiler());
             } catch (IOException e) {

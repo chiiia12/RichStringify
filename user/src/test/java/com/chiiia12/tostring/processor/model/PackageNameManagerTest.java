@@ -25,7 +25,7 @@ public class PackageNameManagerTest {
     }
 
     @Test
-    public void testCreatePackageName_eqaualPaclageName() {
+    public void createPackageName_eqaualPackageName() {
         //given
         String className1 = "com.chiiia12.tostring.user.Animal";
         String className2 = "com.chiiia12.tostring.user.Animal";
@@ -36,5 +36,20 @@ public class PackageNameManagerTest {
         String result = packageNameManager.createPackageName(map);
         //then
         assertThat(result, is("com.chiiia12.tostring.user"));
+    }
+
+    @Test
+    public void createPackageName_notEqualPackageName() {
+        //given
+        String className1 = "com.chiiia12.tostring.user.Animal";
+        String className2 = "com.chiiia12.tostring.user.Person";
+        Map<String, List<Pair<String, String>>> map = new HashMap<>();
+        map.put(className1, new ArrayList<>());
+        map.put(className2, new ArrayList<>());
+        //when
+        String result = packageNameManager.createPackageName(map);
+        //then
+        assertThat(result, is("com.chiiia12.tostring.user"));
+
     }
 }

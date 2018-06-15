@@ -52,4 +52,19 @@ public class PackageNameManagerTest {
         assertThat(result, is("com.chiiia12.tostring.user"));
 
     }
+
+    @Test
+    public void createPackageName_nothave_childpackage() {
+        //given
+        String className1 = "com.chiiia12.tostring.Animal";
+        String className2 = "com.chiiia12.tostring.user.Person";
+        Map<String, List<Pair<String, String>>> map = new HashMap<>();
+        map.put(className1, new ArrayList<>());
+        map.put(className2, new ArrayList<>());
+        //when
+        String result = packageNameManager.createPackageName(map);
+        //then
+        assertThat(result, is("com.chiiia12.tostring"));
+
+    }
 }

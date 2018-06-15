@@ -8,7 +8,7 @@ import javafx.util.Pair;
 
 public class PackageNameManager {
 
-    public String createPackageName(Map<String, List<Pair<String, String>>> map) {
+    public static String createPackageName(Map<String, List<Pair<String, String>>> map) {
         String[] packageName = null;
         for (String cn : map.keySet()) {
             if (packageName == null) {

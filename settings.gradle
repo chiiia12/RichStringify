@@ -1,0 +1,6 @@
+rootProject.name = 'tostring'
+include ':processor'
+include ':user'
+
+project(':processor').projectDir = "$rootDir/processor" as File
+project(':user').projectDir = "$rootDir/user" as File

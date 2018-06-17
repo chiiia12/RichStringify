@@ -1,5 +1,4 @@
-
 description = ''
 dependencies {
-  compile project(':processor')
+    compile project(':processor')
 }

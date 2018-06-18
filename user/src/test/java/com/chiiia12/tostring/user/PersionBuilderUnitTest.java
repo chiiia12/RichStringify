@@ -2,6 +2,9 @@ package com.chiiia12.tostring.user;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class PersionBuilderUnitTest {
     @Test
     public void whenBuildPersonWithStringify_thenObjectHasPropertyValues() {
@@ -9,12 +12,15 @@ public class PersionBuilderUnitTest {
         Person person = new Person();
         person.age = 34;
         person.name = "aaa";
-        System.out.println("toString(): " + Stringify.toString(person));
+        assertThat(Stringify.toString(person), is("age: 34\n"));
+    }
 
+    @Test
+    public void whenBuildAnimalWithStringify_thenObjectHasPropertyValues() {
         //animal test
         Animal animal = new Animal();
         animal.age = 3;
         animal.name = "hoge";
-        System.out.println("toString(): " + Stringify.toString(animal));
+        assertThat(Stringify.toString(animal), is("名前: hoge\nage: 3\n"));
     }
 }

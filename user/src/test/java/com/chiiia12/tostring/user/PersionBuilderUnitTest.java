@@ -31,6 +31,13 @@ public class PersionBuilderUnitTest {
         animal.person.age = 33;
         animal.person.name = "hoge";
         assertThat(Stringify.toString(animal), is("人:\n  age:33\n  name: hoge"));
+    }
 
+    @Test
+    public void whenBuildNoAnnotationObject() {
+        Car car = new Car();
+        car.age = 30;
+        car.name = "hoge";
+        assertThat(Stringify.toString(car), is("age: 30\nname: hoge\n"));
     }
 }

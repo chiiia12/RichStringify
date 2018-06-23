@@ -90,7 +90,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                     .addCode(buildMessage(simpleClassName, entry))
                     .addCode("}\n ");
         }
-        return toStringMethodBuilder.addCode("return null;\n").build();
+        return toStringMethodBuilder.addCode("return object.toString();\n").build();
 
 
     }

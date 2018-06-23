@@ -65,6 +65,5 @@ public class PackageNameManagerTest {
         String result = packageNameManager.createPackageName(map);
         //then
         assertThat(result, is("com.chiiia12.tostring"));
-
     }
 }

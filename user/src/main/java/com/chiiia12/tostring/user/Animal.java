@@ -7,4 +7,6 @@ public class Animal {
     public String name;
     @ToStringLabel
     public int age;
+    @ToStringLabel("人")
+    public Person person;
 }

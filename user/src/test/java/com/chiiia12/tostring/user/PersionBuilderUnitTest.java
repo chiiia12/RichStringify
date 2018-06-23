@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 
 public class PersionBuilderUnitTest {
     @Test
-    public void whenBuildPersonWithStringify_thenObjectHasPropertyValues() {
+    public void whenBuildPersonWithStringify() {
         //person test
         Person person = new Person();
         person.age = 34;
@@ -16,11 +16,21 @@ public class PersionBuilderUnitTest {
     }
 
     @Test
-    public void whenBuildAnimalWithStringify_thenObjectHasPropertyValues() {
+    public void whenBuildAnimalWithStringify() {
         //animal test
         Animal animal = new Animal();
         animal.age = 3;
         animal.name = "hoge";
-        assertThat(Stringify.toString(animal), is("名前: hoge\nage: 3\n"));
+        assertThat(Stringify.toString(animal), is("名前: hoge\nage: 3\n人: null\n"));
+    }
+
+    @Test
+    public void whenBuildAnimalContainsObject() {
+        Animal animal = new Animal();
+        animal.person = new Person();
+        animal.person.age = 33;
+        animal.person.name = "hoge";
+        assertThat(Stringify.toString(animal), is("人:\n  age:33\n  name: hoge"));
+
     }
 }

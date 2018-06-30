@@ -43,6 +43,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
             TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("Stringify");
             typeBuilder.addModifiers(Modifier.PUBLIC);
             Map<String, List<Pair<String, String>>> map = new HashMap<>();
+            Map<String, List<ElementInfo>> elementMap = new HashMap<>();
             for (Element e : setters) {
                 String className = ((TypeElement) e.getEnclosingElement()).getQualifiedName().toString();
                 ToStringLabel toStringLabel = e.getAnnotation(ToStringLabel.class);
@@ -50,7 +51,11 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                 if (!map.containsKey(className)) {
                     map.put(className, new ArrayList<>());
                 }
+                if (!elementMap.containsKey(className)) {
+                    elementMap.put(className, new ArrayList<>());
+                }
                 map.get(className).add(new Pair(e.getSimpleName().toString(), label.isEmpty() ? e.getSimpleName().toString() : label));
+                elementMap.get(className).add(new ElementInfo(e.getSimpleName().toString(), label.isEmpty() ? e.getSimpleName().toString() : label, e));
             }
             MethodSpec toString = buildToStringMethod(map);
 

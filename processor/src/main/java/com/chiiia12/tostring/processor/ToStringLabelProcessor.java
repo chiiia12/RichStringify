@@ -142,14 +142,15 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
     private void getString(String simpleClassName, StringBuilder sb, ElementInfo item) {
         if (primitiveArray.contains(item.element.asType().toString())) {
-            sb.append(item.element.asType().toString());
             sb.append(item.label);
             sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
             sb.append(item.variableName);
             sb.append("+\"\\n");
         } else {
             sb.append(" ");
-//            getString()
+            //TODO get element from roundEnv
+            ElementInfo elementInfo = new ElementInfo(item.variableName, item.label, item.element.getEnclosingElement());
+            getString(simpleClassName, sb, elementInfo);
         }
 
     }

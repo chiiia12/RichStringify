@@ -10,6 +10,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                 map.get(className).add(new Pair(e.getSimpleName().toString(), label.isEmpty() ? e.getSimpleName().toString() : label));
                 elementMap.get(className).add(new ElementInfo(e.getSimpleName().toString(), label.isEmpty() ? e.getSimpleName().toString() : label, e));
             }
-            MethodSpec toString = buildToStringMethod(map);
+            MethodSpec toString = buildToStringMethod(elementMap);
 
             //add separator field
             FieldSpec objectField = FieldSpec.builder(String.class, "separator").addModifiers(Modifier.STATIC).addModifiers(Modifier.FINAL).initializer("\"=\"").build();
@@ -79,12 +80,23 @@ public class ToStringLabelProcessor extends AbstractProcessor {
     }
 
     private MethodSpec buildToStringMethod
-            (Map<String, List<Pair<String, String>>> setterMap) {
+            (Map<String, List<ElementInfo>> setterMap) {
         ParameterSpec param = ParameterSpec.builder(Object.class, "object").build();
         MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
         toStringMethodBuilder.addModifiers(Modifier.PUBLIC).addModifiers(Modifier.STATIC).addParameter(param).returns(String.class);
 
-        for (Map.Entry<String, List<Pair<String, String>>> entry : setterMap.entrySet()) {
+//        for (Map.Entry<String, List<Pair<String, String>>> entry : setterMap.entrySet()) {
+//            int lastDot = entry.getKey().lastIndexOf('.');
+//            String simpleClassName = entry.getKey().substring(lastDot + 1);
+//
+//            //add toString method
+//            toStringMethodBuilder.addCode(String.format("if(object instanceof %s) {\n ", simpleClassName))
+//                    .addCode(String.format("%s %s= (%s)object;\n", simpleClassName, simpleClassName.toLowerCase(), simpleClassName))
+//                    .addCode("return ")
+//                    .addCode(buildMessage(simpleClassName, entry))
+//                    .addCode("}\n ");
+//        }
+        for (Map.Entry<String, List<ElementInfo>> entry : setterMap.entrySet()) {
             int lastDot = entry.getKey().lastIndexOf('.');
             String simpleClassName = entry.getKey().substring(lastDot + 1);
 
@@ -100,17 +112,45 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
     }
 
+//    private String buildMessage(String
+//                                        simpleClassName, Map.Entry<String, List<Pair<String, String>>> entry) {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("\"");
+//        entry.getValue().forEach(item -> {
+//            sb.append(item.getValue());
+//            sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
+//            sb.append(item.getKey());
+//            sb.append("+\"\\n");
+//        });
+//        sb.append("\";\n");
+//        return sb.toString();
+//    }
+
+    //TODO get more easy
+    List<String> primitiveArray = Arrays.asList("java.lang.String", "int", "long", "float");
+
     private String buildMessage(String
-                                        simpleClassName, Map.Entry<String, List<Pair<String, String>>> entry) {
+                                        simpleClassName, Map.Entry<String, List<ElementInfo>> entry) {
         StringBuilder sb = new StringBuilder();
         sb.append("\"");
         entry.getValue().forEach(item -> {
-            sb.append(item.getValue());
-            sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
-            sb.append(item.getKey());
-            sb.append("+\"\\n");
+            getString(simpleClassName, sb, item);
         });
         sb.append("\";\n");
         return sb.toString();
+    }
+
+    private void getString(String simpleClassName, StringBuilder sb, ElementInfo item) {
+        if (primitiveArray.contains(item.element.asType().toString())) {
+            sb.append(item.element.asType().toString());
+            sb.append(item.label);
+            sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
+            sb.append(item.variableName);
+            sb.append("+\"\\n");
+        } else {
+            sb.append(" ");
+//            getString()
+        }
+
     }
 }

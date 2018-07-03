@@ -10,7 +10,6 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +32,14 @@ import javafx.util.Pair;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 public class ToStringLabelProcessor extends AbstractProcessor {
+    Set<? extends Element> annotatedElements;
+    Map<Boolean, List<Element>> annotatedField;
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (TypeElement annotation : annotations) {
-            Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
-            Map<Boolean, List<Element>> annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element -> true));
+            annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
+            annotatedField = annotatedElements.stream().collect(Collectors.partitioningBy(element -> true));
             List<Element> setters = annotatedField.get(true);
 
             TypeSpec.Builder typeBuilder = TypeSpec.classBuilder("Stringify");
@@ -85,17 +86,6 @@ public class ToStringLabelProcessor extends AbstractProcessor {
         MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
         toStringMethodBuilder.addModifiers(Modifier.PUBLIC).addModifiers(Modifier.STATIC).addParameter(param).returns(String.class);
 
-//        for (Map.Entry<String, List<Pair<String, String>>> entry : setterMap.entrySet()) {
-//            int lastDot = entry.getKey().lastIndexOf('.');
-//            String simpleClassName = entry.getKey().substring(lastDot + 1);
-//
-//            //add toString method
-//            toStringMethodBuilder.addCode(String.format("if(object instanceof %s) {\n ", simpleClassName))
-//                    .addCode(String.format("%s %s= (%s)object;\n", simpleClassName, simpleClassName.toLowerCase(), simpleClassName))
-//                    .addCode("return ")
-//                    .addCode(buildMessage(simpleClassName, entry))
-//                    .addCode("}\n ");
-//        }
         for (Map.Entry<String, List<ElementInfo>> entry : setterMap.entrySet()) {
             int lastDot = entry.getKey().lastIndexOf('.');
             String simpleClassName = entry.getKey().substring(lastDot + 1);
@@ -112,23 +102,6 @@ public class ToStringLabelProcessor extends AbstractProcessor {
 
     }
 
-//    private String buildMessage(String
-//                                        simpleClassName, Map.Entry<String, List<Pair<String, String>>> entry) {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("\"");
-//        entry.getValue().forEach(item -> {
-//            sb.append(item.getValue());
-//            sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
-//            sb.append(item.getKey());
-//            sb.append("+\"\\n");
-//        });
-//        sb.append("\";\n");
-//        return sb.toString();
-//    }
-
-    //TODO get more easy
-    List<String> primitiveArray = Arrays.asList("java.lang.String", "int", "long", "float");
-
     private String buildMessage(String
                                         simpleClassName, Map.Entry<String, List<ElementInfo>> entry) {
         StringBuilder sb = new StringBuilder();
@@ -141,17 +114,9 @@ public class ToStringLabelProcessor extends AbstractProcessor {
     }
 
     private void getString(String simpleClassName, StringBuilder sb, ElementInfo item) {
-        if (primitiveArray.contains(item.element.asType().toString())) {
-            sb.append(item.label);
-            sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
-            sb.append(item.variableName);
-            sb.append("+\"\\n");
-        } else {
-            sb.append(" ");
-            //TODO get element from roundEnv
-            ElementInfo elementInfo = new ElementInfo(item.variableName, item.label, item.element.getEnclosingElement());
-            getString(simpleClassName, sb, elementInfo);
-        }
-
+        sb.append(item.label);
+        sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
+        sb.append(item.variableName);
+        sb.append("+\"\\n");
     }
 }

@@ -1,9 +1,33 @@
 # RichStringer
 RichStringer is annotation-based string generator for entity.
+This is beta version.
 
 # Usage 
+Add `@ToStringLabel` to field that you want output.
+
+```
+public class Animal{
+ @ToStringLabel("Animal's name")
+ String name;
+ @ToStringLabel("Animal's age")
+ int age
+}
+```
+
+To get string, Use `Stringify.toString()`
+```
+Animal animal = new Animal();
+animal.name = "John";
+animal.age = 13;
+Stringify.toString(animal)
+```
+```ouput
+Animal's name: John
+Animal's age: 13
+```
 
 # Download
+not prepared yet.
 
 # License
 ```

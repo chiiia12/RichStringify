@@ -21,23 +21,6 @@ public class PersionBuilderUnitTest {
         Animal animal = new Animal();
         animal.age = 3;
         animal.name = "hoge";
-        assertThat(Stringify.toString(animal), is("名前: hoge\nage: 3\n人: null\n"));
-    }
-
-    @Test
-    public void whenBuildAnimalContainsObject() {
-        Animal animal = new Animal();
-        animal.person = new Person();
-        animal.person.age = 33;
-        animal.person.name = "hoge";
-        assertThat(Stringify.toString(animal), is("人:\n  age:33\n  name: hoge"));
-    }
-
-    @Test
-    public void whenBuildNoAnnotationObject() {
-        Car car = new Car();
-        car.age = 30;
-        car.name = "hoge";
-        assertThat(Stringify.toString(car), is("age: 30\nname: hoge\n"));
+        assertThat(Stringify.toString(animal), is("名前: hoge\nage: 3\n"));
     }
 }

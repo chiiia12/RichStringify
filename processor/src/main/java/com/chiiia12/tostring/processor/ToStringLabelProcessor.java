@@ -59,7 +59,7 @@ public class ToStringLabelProcessor extends AbstractProcessor {
                 map.get(className).add(new Pair(e.getSimpleName().toString(), label.isEmpty() ? e.getSimpleName().toString() : label));
                 elementMap.get(className).add(new ElementInfo(e.getSimpleName().toString(), label.isEmpty() ? e.getSimpleName().toString() : label, e));
             }
-            MethodSpec toString = buildToStringMethod(elementMap);
+            MethodSpec toString = buildToStringMethod(map);
 
             //add separator field
             FieldSpec objectField = FieldSpec.builder(String.class, "separator").addModifiers(Modifier.STATIC).addModifiers(Modifier.FINAL).initializer("\"=\"").build();
@@ -81,12 +81,12 @@ public class ToStringLabelProcessor extends AbstractProcessor {
     }
 
     private MethodSpec buildToStringMethod
-            (Map<String, List<ElementInfo>> setterMap) {
+            (Map<String, List<Pair<String, String>>> setterMap) {
         ParameterSpec param = ParameterSpec.builder(Object.class, "object").build();
         MethodSpec.Builder toStringMethodBuilder = MethodSpec.methodBuilder("toString");
         toStringMethodBuilder.addModifiers(Modifier.PUBLIC).addModifiers(Modifier.STATIC).addParameter(param).returns(String.class);
 
-        for (Map.Entry<String, List<ElementInfo>> entry : setterMap.entrySet()) {
+        for (Map.Entry<String, List<Pair<String, String>>> entry : setterMap.entrySet()) {
             int lastDot = entry.getKey().lastIndexOf('.');
             String simpleClassName = entry.getKey().substring(lastDot + 1);
 
@@ -103,20 +103,17 @@ public class ToStringLabelProcessor extends AbstractProcessor {
     }
 
     private String buildMessage(String
-                                        simpleClassName, Map.Entry<String, List<ElementInfo>> entry) {
+                                        simpleClassName, Map.Entry<String, List<Pair<String, String>>> entry) {
         StringBuilder sb = new StringBuilder();
         sb.append("\"");
         entry.getValue().forEach(item -> {
-            getString(simpleClassName, sb, item);
+            sb.append(item.getValue());
+            sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
+            sb.append(item.getKey());
+            sb.append("+\"\\n");
         });
         sb.append("\";\n");
         return sb.toString();
     }
 
-    private void getString(String simpleClassName, StringBuilder sb, ElementInfo item) {
-        sb.append(item.label);
-        sb.append(String.format(": \"+%s.", simpleClassName.toLowerCase()));
-        sb.append(item.variableName);
-        sb.append("+\"\\n");
-    }
 }

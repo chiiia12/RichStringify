@@ -1,4 +1,4 @@
-package com.chiiia12.tostring.processor.model;
+package com.chiiia12.richstringify.processor.model;
 
 import org.junit.Before;
 import org.junit.Test;

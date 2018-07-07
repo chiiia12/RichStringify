@@ -1,4 +1,4 @@
-package com.chiiia12.tostring.user;
+package com.chiiia12.richstringify.user;
 
 import org.junit.Test;
 

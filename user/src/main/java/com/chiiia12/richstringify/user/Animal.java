@@ -1,6 +1,6 @@
-package com.chiiia12.tostring.user;
+package com.chiiia12.richstringify.user;
 
-import com.chiiia12.tostring.processor.ToStringLabel;
+import com.chiiia12.richstringify.processor.ToStringLabel;
 
 public class Animal {
     @ToStringLabel("名前")

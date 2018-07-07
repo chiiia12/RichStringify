@@ -1,4 +1,4 @@
-package com.chiiia12.tostring.processor;
+package com.chiiia12.richstringify.processor;
 
 import javax.lang.model.element.Element;
 

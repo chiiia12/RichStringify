@@ -1,4 +1,4 @@
-package com.chiiia12.tostring.processor;
+package com.chiiia12.richstringify.processor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

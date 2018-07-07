@@ -1,6 +1,6 @@
-package com.chiiia12.tostring.processor;
+package com.chiiia12.richstringify.processor;
 
-import com.chiiia12.tostring.processor.model.PackageNameManager;
+import com.chiiia12.richstringify.processor.model.PackageNameManager;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -28,7 +28,7 @@ import javax.lang.model.element.TypeElement;
 
 import javafx.util.Pair;
 
-@SupportedAnnotationTypes("com.chiiia12.tostring.processor.ToStringLabel")
+@SupportedAnnotationTypes("ToStringLabel")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 public class ToStringLabelProcessor extends AbstractProcessor {

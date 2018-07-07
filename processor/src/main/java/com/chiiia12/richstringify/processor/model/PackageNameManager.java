@@ -1,4 +1,4 @@
-package com.chiiia12.tostring.processor.model;
+package com.chiiia12.richstringify.processor.model;
 
 import java.util.Arrays;
 import java.util.List;

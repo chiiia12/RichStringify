@@ -1,8 +1,11 @@
 package com.chiiia12.richstringify.user;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-public class PersionBuilderUnitTest {
+@RunWith(JUnit4.class)
+public class PersonBuilderUnitTest {
     @Test
     public void whenBuildPersonWithStringify() {
         //person test

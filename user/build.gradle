@@ -1,4 +1,0 @@
-description = ''
-dependencies {
-    compile project(':processor')
-}

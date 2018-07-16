@@ -1,23 +1,21 @@
-allprojects  {
-  apply plugin: 'maven'
+allprojects {
+    apply plugin: 'maven'
 
-  group = 'com.chiiia12'
-version = '1.0.0-SNAPSHOT'
+    group = 'com.chiiia12'
+    version = '0.1.0-test'
 }
 
 subprojects {
-  apply plugin: 'java'
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+    apply plugin: 'java'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-  
-  repositories {
-    mavenLocal()
-    
-    maven { url "http://repo.maven.apache.org/maven2" }
-  }
 
-  
-  
-  
+    repositories {
+        mavenLocal()
+
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+
+
 }

@@ -4,6 +4,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 @RunWith(JUnit4.class)
 public class PersonBuilderUnitTest {
     @Test
@@ -12,7 +15,7 @@ public class PersonBuilderUnitTest {
         Person person = new Person();
         person.age = 34;
         person.name = "aaa";
-//        assertThat(Stringify.toString(person), is("age: 34\n"));
+        assertThat(Stringify.toString(person), is("age: 34\n"));
     }
 
     @Test
@@ -21,6 +24,6 @@ public class PersonBuilderUnitTest {
         Animal animal = new Animal();
         animal.age = 3;
         animal.name = "hoge";
-//        assertThat(Stringify.toString(animal), is("名前: hoge\nage: 3\n"));
+        assertThat(Stringify.toString(animal), is("名前: hoge\nage: 3\n"));
     }
 }

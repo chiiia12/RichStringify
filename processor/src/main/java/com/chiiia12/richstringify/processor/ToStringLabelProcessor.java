@@ -28,7 +28,8 @@ import javax.lang.model.element.TypeElement;
 
 import javafx.util.Pair;
 
-@SupportedAnnotationTypes("ToStringLabel")
+
+@SupportedAnnotationTypes("com.chiiia12.richstringify.processor.ToStringLabel")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 public class ToStringLabelProcessor extends AbstractProcessor {

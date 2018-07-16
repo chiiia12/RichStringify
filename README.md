@@ -1,4 +1,5 @@
 # RichStringer
+[![Build Status](https://travis-ci.org/chiiia12/RichStringify.svg?branch=master)](https://travis-ci.org/chiiia12/RichStringify)
 RichStringer is annotation-based string generator for entity.
 This is beta version.
 
